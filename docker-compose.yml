@@ -1,0 +1,16 @@
+version: '3.8'
+name: realtime-chat-server
+services:
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - 54321:5432
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "petamin" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    environment:
+      POSTGRES_PASSWORD: petamin
+      POSTGRES_USER: petamin
+      POSTGRES_DB: petamin
