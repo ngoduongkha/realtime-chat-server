@@ -1,8 +1,9 @@
-import { Column, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Conversation } from './conversation.entity';
 import { User } from './user.entity';
 
+@Entity('messages')
 export class Message extends BaseEntity {
   @Column({ name: 'content' })
   content: string;
@@ -10,8 +11,8 @@ export class Message extends BaseEntity {
   @Column({ name: 'conversation_id' })
   conversationId: string;
 
-  @ManyToOne(() => Conversation, (conversation) => conversation.messages)
-  @JoinColumn({ name: 'conversationId' })
+  @ManyToOne(() => Conversation)
+  @JoinColumn({ name: 'conversation_id' })
   conversation: Conversation;
 
   @Column()

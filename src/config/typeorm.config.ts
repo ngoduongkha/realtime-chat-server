@@ -1,9 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { resolve } from 'path';
-import { DataSourceOptions } from 'typeorm';
 
-const options: DataSourceOptions = {
+export default {
   type: 'postgres',
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
@@ -14,12 +11,3 @@ const options: DataSourceOptions = {
   synchronize: process.env.DB_SYNCHRONIZE,
   entities: [resolve(__dirname, '../database/entities/*.entity.{js,ts}')],
 };
-
-@Injectable()
-export class TypeOrmConfigService implements TypeOrmOptionsFactory {
-  createTypeOrmOptions(): TypeOrmModuleOptions {
-    return {
-      ...options,
-    };
-  }
-}

@@ -1,12 +1,12 @@
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from './base.entity';
 
-@Entity()
+@Entity('users')
 export class User extends BaseEntity {
   @Column({ name: 'email', unique: true })
   email: string;
 
-  @Column({ name: 'password' })
+  @Column({ name: 'password', select: false })
   password: string;
 
   @Column({ name: 'first_name' })
@@ -19,5 +19,8 @@ export class User extends BaseEntity {
   bio: string;
 
   @Column({ name: 'profile_pic', nullable: true })
-  profilePic: string;
+  profilePic: string | null;
+
+  @Column({ name: 'refresh_token', nullable: true, select: false })
+  refreshToken: string | null;
 }
