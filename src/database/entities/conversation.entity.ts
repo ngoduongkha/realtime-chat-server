@@ -1,28 +1,12 @@
-import { Column } from 'typeorm';
+import { Column, JoinColumn, OneToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
+import { Message } from './message.entity';
 
 export class Conversation extends BaseEntity {
-  @Column()
-  name: string;
+  @Column({ name: 'last_message_id', nullable: true })
+  lastMessageId: string;
 
-  @Column()
-  description: string;
-
-  @Column()
-  profilePic: string;
-
-  @Column()
-  isGroup: boolean;
-
-  @Column()
-  ownerId: string;
-
-  @Column()
-  owner: User;
-
-  @Column()
-  members: User[];
-
-  @Column()
-  messages: Message[];
+  @OneToOne(() => Message)
+  @JoinColumn({ name: 'last_message_id' })
+  lastMessage: Message;
 }

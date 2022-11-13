@@ -3,21 +3,21 @@ import { BaseEntity } from './base.entity';
 
 @Entity()
 export class User extends BaseEntity {
-  @Column()
+  @Column({ name: 'email', unique: true })
   email: string;
 
-  @Column()
+  @Column({ name: 'password' })
   password: string;
 
-  @Column()
+  @Column({ name: 'first_name' })
   firstName: string;
 
-  @Column()
+  @Column({ name: 'last_name' })
   lastName: string;
 
-  @Column()
+  @Column({ name: 'bio', nullable: true })
   bio: string;
 
-  @Column()
+  @Column({ name: 'profile_pic', nullable: true })
   profilePic: string;
 }

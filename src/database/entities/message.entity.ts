@@ -4,10 +4,10 @@ import { Conversation } from './conversation.entity';
 import { User } from './user.entity';
 
 export class Message extends BaseEntity {
-  @Column()
+  @Column({ name: 'content' })
   content: string;
 
-  @Column()
+  @Column({ name: 'conversation_id' })
   conversationId: string;
 
   @ManyToOne(() => Conversation, (conversation) => conversation.messages)
