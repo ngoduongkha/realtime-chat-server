@@ -1,13 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import config from 'src/config';
 import { UserService } from '../user/user.service';
 import { PostLoginResponse } from './dto';
+import { PostSignupResponse, SignupDto } from './dto/signup.dto';
 import { TokenPayload, UserCredentials } from './models';
 
 @Injectable()
 export class AuthService {
-  constructor(private userService: UserService, private jwtService: JwtService) {}
+  constructor(
+    @Inject(config.KEY)
+    private readonly configService: ConfigType<typeof config>,
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async validateUser(email: string, password: string): Promise<TokenPayload | null> {
     const user: {
@@ -27,10 +35,12 @@ export class AuthService {
     return null;
   }
 
-  async login(user: TokenPayload): Promise<PostLoginResponse> {
-    const { accessToken } = this.jwtToken(user);
-    const refreshToken = this.jwtRefreshToken(user);
-    await this.userService.setCurrentRefreshToken(refreshToken, user.id);
+  async signup(dto: SignupDto): Promise<PostSignupResponse> {
+    const createdUser = await this.userService.create(dto);
+
+    const accessToken = this.jwtToken({ id: createdUser.id });
+    const refreshToken = this.jwtRefreshToken({ id: createdUser.id });
+    await this.userService.setCurrentRefreshToken(createdUser.id, refreshToken);
 
     return {
       accessToken,
@@ -38,18 +48,25 @@ export class AuthService {
     };
   }
 
-  private jwtToken(payload: TokenPayload): UserCredentials {
+  async login(user: TokenPayload): Promise<PostLoginResponse> {
+    const accessToken = this.jwtToken(user);
+    const refreshToken = this.jwtRefreshToken(user);
+    await this.userService.setCurrentRefreshToken(user.id, refreshToken);
+
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken,
+      refreshToken,
     };
   }
 
-  jwtRefreshToken(user: TokenPayload) {
-    const payload = { role: user.role, id: user.id };
+  private jwtToken(user: TokenPayload): string {
+    return this.jwtService.sign(user);
+  }
 
-    const refreshToken = this.jwtService.sign(payload, {
+  private jwtRefreshToken(user: TokenPayload): string {
+    const refreshToken = this.jwtService.sign(user, {
       secret: this.configService.jwt.jwtRefreshSecret,
-      expiresIn: `${this.configService.jwt.refreshTokenExpiration}`,
+      expiresIn: parseInt(this.configService.jwt.refreshTokenExpiration, 10),
     });
 
     return refreshToken;
@@ -60,6 +77,8 @@ export class AuthService {
   }
 
   createAccessTokenFromRefreshToken(user: TokenPayload): UserCredentials {
-    return this.jwtToken(user);
+    return {
+      accessToken: this.jwtToken(user),
+    };
   }
 }

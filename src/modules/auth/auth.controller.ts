@@ -1,14 +1,31 @@
-import { Controller, Get, HttpCode, Post, Req, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { GetRefreshResponse, LoginDto, PostLoginResponse } from './dto';
+import {
+  GetRefreshResponse,
+  LoginDto,
+  PostLoginResponse,
+  PostSignupResponse,
+  SignupDto,
+} from './dto';
 import { JwtAuthGuard, JwtRefreshGuard, LocalAuthGuard } from './guards';
-import { TokenPayload } from './models';
-
-type AuthorizedRequest = Express.RPayloadTokenequest & {
-  headers: { authorization: string };
-  user: TokenPayload;
-};
+import { AuthorizedRequest } from './models';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -16,28 +33,35 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @ApiBody({ type: LoginDto })
-  @ApiResponse({ type: PostLoginResponse, status: 200 })
+  @ApiOkResponse({ type: PostLoginResponse })
   @UseGuards(LocalAuthGuard)
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   @Post('login')
-  login(@Request() req: { user: TokenPayload }): Promise<PostLoginResponse> {
-    const { user } = req;
-    return this.authService.login(user);
+  login(@Request() req: AuthorizedRequest): Promise<PostLoginResponse> {
+    return this.authService.login(req.user);
   }
 
-  @ApiResponse({ status: 200 })
+  @ApiBody({ type: SignupDto })
+  @ApiCreatedResponse({ type: PostSignupResponse })
+  @HttpCode(HttpStatus.CREATED)
+  @Post('signup')
+  signup(@Body() dto: SignupDto): Promise<PostSignupResponse> {
+    return this.authService.signup(dto);
+  }
+
+  @ApiOkResponse()
   @ApiBearerAuth('access-token')
   @UseGuards(JwtAuthGuard)
   @Get('logout')
-  async logOut(@Request() req: { user: TokenPayload }) {
+  async logOut(@Request() req: AuthorizedRequest): Promise<void> {
     await this.authService.logout(req.user);
   }
 
-  @ApiResponse({ status: 200, type: GetRefreshResponse })
+  @ApiOkResponse({ type: GetRefreshResponse })
   @ApiBearerAuth('refresh-token')
   @UseGuards(JwtRefreshGuard)
   @Get('refresh')
-  refresh(@Req() req: AuthorizedRequest) {
+  refresh(@Req() req: AuthorizedRequest): GetRefreshResponse {
     return this.authService.createAccessTokenFromRefreshToken(req.user);
   }
 }

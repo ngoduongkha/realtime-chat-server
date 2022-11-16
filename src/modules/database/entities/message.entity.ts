@@ -5,19 +5,20 @@ import { User } from './user.entity';
 
 @Entity('messages')
 export class Message extends BaseEntity {
-  @Column({ name: 'content' })
+  @Column({ type: 'varchar' })
   content: string;
 
-  @Column({ name: 'conversation_id' })
+  @Column({ type: 'uuid' })
   conversationId: string;
 
   @ManyToOne(() => Conversation)
-  @JoinColumn({ name: 'conversation_id' })
+  @JoinColumn()
   conversation: Conversation;
 
-  @Column()
+  @Column({ type: 'uuid' })
   senderId: string;
 
-  @Column()
+  @ManyToOne(() => User)
+  @JoinColumn()
   sender: User;
 }

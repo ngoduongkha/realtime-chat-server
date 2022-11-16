@@ -4,10 +4,10 @@ import { Message } from './message.entity';
 
 @Entity('conversations')
 export class Conversation extends BaseEntity {
-  @Column({ name: 'last_message_id', nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   lastMessageId: string;
 
   @OneToOne(() => Message)
-  @JoinColumn({ name: 'last_message_id' })
+  @JoinColumn()
   lastMessage: Message;
 }

@@ -6,7 +6,7 @@ import { AppModule } from './app.module';
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
-      ENV: 'test' | 'dev' | 'prod';
+      NODE_ENV: 'test' | 'dev' | 'stag' | 'prod';
       PORT: number;
       DB_CONNECTION: string;
       DB_HOST: string;
@@ -17,7 +17,9 @@ declare global {
       DB_LOGGING: boolean;
       DB_SYNCHRONIZE: boolean;
       JWT_SECRET: string;
-      ACCESS_TOKEN_EXPIRATION: number;
+      JWT_REFRESH_SECRET: string;
+      ACCESS_TOKEN_EXPIRATION: string;
+      REFRESH_TOKEN_EXPIRATION: string;
       AWS_REGION: string;
       AWS_ACCESS_KEY_ID: string;
       AWS_SECRET_ACCESS_KEY: string;
