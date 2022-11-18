@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - 5432:5432
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-U",
+          "admin",
+          "-d",
+          "realtime-chat-server"
+        ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: realtime-chat-server
+
+  server:
+    image: ngoduongkha/realtime-chat-server:latest
+    ports:
+      - 80:3000
+    depends_on:
+      - postgres
+    env_file:
+      - .env

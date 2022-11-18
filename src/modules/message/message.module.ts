@@ -1,12 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { MessageService } from './message.service';
-import { MessageController } from './message.controller';
-import { Message } from '../database/entities';
+import MessageGateway from './message.gateway';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Message])],
-  controllers: [MessageController],
-  providers: [MessageService],
+  providers: [MessageGateway, MessageService],
 })
 export class MessageModule {}

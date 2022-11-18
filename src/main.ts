@@ -41,6 +41,7 @@ async function bootstrap(): Promise<void> {
       transformOptions: {
         enableImplicitConversion: true,
       },
+      disableErrorMessages: process.env.NODE_ENV === 'prod',
     }),
   );
 
