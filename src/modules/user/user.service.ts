@@ -14,10 +14,16 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  async findById(id: string): Promise<User | null> {
+    return this.userRepository.findOneBy({ id });
+  }
+
   async create(dto: SignupDto): Promise<User> {
-    await this.userRepository.findOneBy({ email: dto.email }).then(() => {
-      throw new BadRequestException('User already exists');
-    });
+    const existing = await this.userRepository.findOneBy({ email: dto.email });
+
+    if (existing) {
+      throw new BadRequestException('Email already exists');
+    }
 
     const user = this.userRepository.create({
       email: dto.email,

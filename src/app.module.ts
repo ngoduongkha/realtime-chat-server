@@ -6,9 +6,9 @@ import { environments } from './environments';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { ConversationModule } from './modules/conversation/conversation.module';
-import { MessageModule } from './modules/message/message.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { HealthController } from './health.controller';
+import { MessageModule } from './modules/message/message.module';
 
 @Module({
   imports: [
