@@ -10,8 +10,6 @@ import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
-    UserModule,
-    PassportModule,
     JwtModule.registerAsync({
       inject: [config.KEY],
       useFactory: (configService: ConfigType<typeof config>) => {
@@ -23,6 +21,8 @@ import { UserModule } from '../user/user.module';
         };
       },
     }),
+    UserModule,
+    PassportModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshTokenStrategy, WsJwtStrategy],

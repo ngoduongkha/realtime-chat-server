@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { Information } from './information.entity';
 import { Profile } from './profile.entity';
+import { UserConversation } from './user-conversation.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -14,10 +14,10 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', nullable: true, select: false })
   refreshToken: string | null;
 
-  @OneToOne(() => Profile, { cascade: true })
+  @OneToOne(() => Profile)
   @JoinColumn()
   profile: Profile;
 
-  @OneToMany(() => Information, (information) => information.user)
-  information: Information[];
+  @OneToMany(() => UserConversation, (userConversation) => userConversation.user)
+  userConversations: UserConversation[];
 }

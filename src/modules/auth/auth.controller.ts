@@ -25,7 +25,7 @@ import {
   SignupDto,
 } from './dto';
 import { JwtAuthGuard, JwtRefreshGuard, LocalAuthGuard } from './guards';
-import { AuthorizedRequest } from './models';
+import { RequestWithAuth } from './types';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -37,7 +37,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  login(@Request() req: AuthorizedRequest): Promise<PostLoginResponse> {
+  login(@Request() req: RequestWithAuth): Promise<PostLoginResponse> {
     return this.authService.login(req.user);
   }
 
@@ -53,7 +53,7 @@ export class AuthController {
   @ApiBearerAuth('access-token')
   @UseGuards(JwtAuthGuard)
   @Get('logout')
-  async logOut(@Request() req: AuthorizedRequest): Promise<void> {
+  async logOut(@Request() req: RequestWithAuth): Promise<void> {
     await this.authService.logout(req.user);
   }
 
@@ -61,7 +61,7 @@ export class AuthController {
   @ApiBearerAuth('refresh-token')
   @UseGuards(JwtRefreshGuard)
   @Get('refresh')
-  refresh(@Req() req: AuthorizedRequest): GetRefreshResponse {
+  refresh(@Req() req: RequestWithAuth): GetRefreshResponse {
     return this.authService.createAccessTokenFromRefreshToken(req.user);
   }
 }

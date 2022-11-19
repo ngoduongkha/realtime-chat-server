@@ -13,12 +13,12 @@ export class Message extends BaseEntity {
 
   @ManyToOne(() => Conversation)
   @JoinColumn()
-  conversation: Conversation;
+  conversation?: Conversation;
 
   @Column({ type: 'uuid' })
   senderId: string;
 
   @ManyToOne(() => User)
   @JoinColumn()
-  sender: User;
+  sender?: User;
 }

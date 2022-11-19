@@ -6,7 +6,7 @@ import config from 'src/config';
 import { UserService } from '../user/user.service';
 import { PostLoginResponse } from './dto';
 import { PostSignupResponse, SignupDto } from './dto/signup.dto';
-import { TokenPayload, UserCredentials } from './models';
+import { AuthPayload, UserCredentials } from './types';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<TokenPayload | null> {
+  async validateUser(email: string, password: string): Promise<AuthPayload | null> {
     const user: {
       id: string;
       password: string;
@@ -36,7 +36,7 @@ export class AuthService {
   }
 
   async signup(dto: SignupDto): Promise<PostSignupResponse> {
-    const createdUser = await this.userService.create(dto);
+    const createdUser = await this.userService.register(dto);
 
     const accessToken = this.jwtToken({ id: createdUser.id });
     const refreshToken = this.jwtRefreshToken({ id: createdUser.id });
@@ -48,7 +48,7 @@ export class AuthService {
     };
   }
 
-  async login(user: TokenPayload): Promise<PostLoginResponse> {
+  async login(user: AuthPayload): Promise<PostLoginResponse> {
     const accessToken = this.jwtToken(user);
     const refreshToken = this.jwtRefreshToken(user);
     await this.userService.setCurrentRefreshToken(user.id, refreshToken);
@@ -59,11 +59,11 @@ export class AuthService {
     };
   }
 
-  private jwtToken(user: TokenPayload): string {
+  private jwtToken(user: AuthPayload): string {
     return this.jwtService.sign(user);
   }
 
-  private jwtRefreshToken(user: TokenPayload): string {
+  private jwtRefreshToken(user: AuthPayload): string {
     const refreshToken = this.jwtService.sign(user, {
       secret: this.configService.jwt.jwtRefreshSecret,
       expiresIn: parseInt(this.configService.jwt.refreshTokenExpiration, 10),
@@ -72,11 +72,11 @@ export class AuthService {
     return refreshToken;
   }
 
-  async logout(user: TokenPayload): Promise<void> {
+  async logout(user: AuthPayload): Promise<void> {
     await this.userService.removeRefreshToken(user.id);
   }
 
-  createAccessTokenFromRefreshToken(user: TokenPayload): UserCredentials {
+  createAccessTokenFromRefreshToken(user: AuthPayload): UserCredentials {
     return {
       accessToken: this.jwtToken(user),
     };

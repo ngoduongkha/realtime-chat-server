@@ -9,6 +9,7 @@ import { ConversationModule } from './modules/conversation/conversation.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { HealthController } from './health.controller';
 import { MessageModule } from './modules/message/message.module';
+import { InformationModule } from './modules/information/information.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { MessageModule } from './modules/message/message.module';
     ConversationModule,
     MessageModule,
     DatabaseModule,
+    InformationModule,
   ],
   controllers: [HealthController],
 })

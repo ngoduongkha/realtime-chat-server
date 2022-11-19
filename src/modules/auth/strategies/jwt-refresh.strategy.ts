@@ -4,7 +4,7 @@ import { ConfigType } from '@nestjs/config';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserService } from 'src/modules/user/user.service';
 import config from 'src/config';
-import { AuthorizedRequest, TokenPayload } from '../models';
+import { RequestWithAuth, AuthPayload } from '../types';
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refresh-token') {
@@ -20,8 +20,9 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-ref
     });
   }
 
-  async validate(request: AuthorizedRequest, payload: TokenPayload): Promise<TokenPayload> {
-    const refreshToken = request.headers.authorization.split(' ')[1];
+  async validate(request: RequestWithAuth, payload: AuthPayload): Promise<AuthPayload> {
+    const refreshToken = request.headers.authorization?.split(' ')[1];
+
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token is missing');
     }

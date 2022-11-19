@@ -1,19 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseResponse } from 'src/common/base.dto';
 
-export class GetUserProfileDto {
-  @ApiProperty({ example: 'ngoduongkhakg2001@gmail.com' })
-  email: string;
+export class GetProfileResponse extends BaseResponse {
+  @ApiProperty({ type: String, example: 'Ngo Kha' })
+  name: string;
 
-  @ApiProperty({ example: 'Kha' })
-  firstName: string;
-
-  @ApiProperty({ example: 'Ngo' })
-  lastName: string;
-
-  @ApiProperty({ example: 'This is my bio', nullable: true })
+  @ApiProperty({ type: String, example: 'This is my bio', nullable: true })
   bio: string | null;
 
   @ApiProperty({
+    type: String,
     example: 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
     nullable: true,
   })

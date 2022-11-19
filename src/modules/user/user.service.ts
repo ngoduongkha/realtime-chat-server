@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { createHash } from 'crypto';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { User } from '../database/entities';
-import { GetUserProfileDto } from './dto';
+import { Profile, User } from '../database/entities';
+import { GetUserResponse } from './dto';
 import { SignupDto } from '../auth/dto';
 
 @Injectable()
@@ -12,45 +12,49 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Profile)
+    private readonly profileRepository: Repository<Profile>,
   ) {}
 
   async findById(id: string): Promise<User | null> {
     return this.userRepository.findOneBy({ id });
   }
 
-  async create(dto: SignupDto): Promise<User> {
+  async register(dto: SignupDto): Promise<User> {
     const existing = await this.userRepository.findOneBy({ email: dto.email });
 
     if (existing) {
-      throw new BadRequestException('Email already exists');
+      throw new BadRequestException('Email already register');
     }
+
+    const profile = await this.profileRepository.save(
+      this.profileRepository.create({
+        name: dto.name,
+      }),
+    );
 
     const user = this.userRepository.create({
       email: dto.email,
       password: bcrypt.hashSync(dto.password, 10),
-      profile: {
-        firstName: dto.firstName,
-        lastName: dto.lastName,
-      },
+      profile,
     });
 
     return this.userRepository.save(user);
   }
 
-  async getUserProfileById(userId: string): Promise<GetUserProfileDto> {
+  async getUserProfileById(userId: string): Promise<GetUserResponse> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['profile'],
+      relations: {
+        profile: true,
+      },
     });
 
     if (!user) {
       throw new BadRequestException('User not found');
     }
 
-    return {
-      email: user.email,
-      ...user.profile,
-    };
+    return user;
   }
 
   async findByEmailAndGetPassword(email: string): Promise<User | null> {

@@ -14,6 +14,7 @@ export abstract class BaseEntity extends IdentityEntity {
 
   @Column({
     default: false,
+    select: false,
   })
   isDeleted: boolean;
 }

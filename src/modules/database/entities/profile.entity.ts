@@ -1,13 +1,10 @@
 import { Column, Entity } from 'typeorm';
 import { IdentityEntity } from './base.entity';
 
-@Entity('profiles')
+@Entity()
 export class Profile extends IdentityEntity {
   @Column({ type: 'varchar' })
-  firstName: string;
-
-  @Column({ type: 'varchar' })
-  lastName: string;
+  name: string;
 
   @Column({ type: 'varchar', nullable: true })
   bio: string | null;

@@ -13,15 +13,10 @@ export class SignupDto {
   @MinLength(8)
   readonly password: string;
 
-  @ApiProperty({ example: 'Kha', minLength: 3 })
+  @ApiProperty({ example: 'Ngo Duong Kha', minLength: 3 })
   @IsDefined()
   @MinLength(3)
-  readonly firstName: string;
-
-  @ApiProperty({ example: 'Ngo', minLength: 3 })
-  @IsDefined()
-  @MinLength(3)
-  readonly lastName: string;
+  readonly name: string;
 }
 
 export class PostSignupResponse extends PostLoginResponse {}

@@ -1,7 +1,7 @@
 import { Controller, UseGuards, Get, Param, ParseUUIDPipe } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards';
-import { GetUserProfileDto } from './dto';
+import { GetUserResponse } from './dto';
 import { CurrentUser } from './user.decorator';
 
 import { UserService } from './user.service';
@@ -13,13 +13,15 @@ import { UserService } from './user.service';
 export class ProfileController {
   constructor(private readonly userService: UserService) {}
 
+  @ApiOkResponse({ type: GetUserResponse })
   @Get('me')
-  getMe(@CurrentUser('id') userId: string): Promise<GetUserProfileDto> {
+  getMe(@CurrentUser('id') userId: string): Promise<GetUserResponse> {
     return this.userService.getUserProfileById(userId);
   }
 
+  @ApiOkResponse({ type: GetUserResponse })
   @Get(':id')
-  get(@Param('id', new ParseUUIDPipe()) userId: string): Promise<GetUserProfileDto> {
+  get(@Param('id', new ParseUUIDPipe()) userId: string): Promise<GetUserResponse> {
     return this.userService.getUserProfileById(userId);
   }
 
