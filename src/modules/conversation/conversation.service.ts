@@ -56,7 +56,7 @@ export class ConversationService {
     });
   }
 
-  async getUserInConversation(conversationId: string): Promise<string[]> {
+  async getUserIdsInConversation(conversationId: string): Promise<string[]> {
     const userConversations = await this.userConversationRepository.find({
       where: {
         conversationId,

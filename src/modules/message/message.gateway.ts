@@ -13,6 +13,7 @@ import {
 import { Namespace, Socket } from 'socket.io';
 import { WsJwtGuard } from '../auth/guards';
 import { AuthPayload, SocketWithAuth } from '../auth/types';
+import { ConversationService } from '../conversation/conversation.service';
 import { InformationService } from '../information/information.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessageService } from './message.service';
@@ -33,6 +34,7 @@ export default class MessageGateway
     private readonly jwtService: JwtService,
     private readonly messageService: MessageService,
     private readonly informationService: InformationService,
+    private readonly conversationService: ConversationService,
   ) {}
 
   afterInit(): void {
@@ -60,7 +62,10 @@ export default class MessageGateway
   }
 
   @SubscribeMessage('message')
-  handleMessage(@ConnectedSocket() client: SocketWithAuth, payload: CreateMessageDto): void {
+  async handleMessage(
+    @ConnectedSocket() client: SocketWithAuth,
+    payload: CreateMessageDto,
+  ): Promise<void> {
     this.messageService.createMessage(client.handshake.user.id, payload);
   }
 

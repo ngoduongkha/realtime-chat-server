@@ -7,6 +7,7 @@ import { MessageService } from './message.service';
 import MessageGateway from './message.gateway';
 import { InformationModule } from '../information/information.module';
 import { Message } from '../database/entities';
+import { ConversationModule } from '../conversation/conversation.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { Message } from '../database/entities';
       },
     }),
     InformationModule,
+    ConversationModule,
   ],
   providers: [MessageGateway, MessageService],
 })
