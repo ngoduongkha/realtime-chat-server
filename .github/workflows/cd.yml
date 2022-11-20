@@ -19,7 +19,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ngoduongkha/petamin-server:latest
+          tags: ngoduongkha/realtime-chat-server:latest
   deploy:
     runs-on: ubuntu-latest
     needs: build
