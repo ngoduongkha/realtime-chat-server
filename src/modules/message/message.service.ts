@@ -16,4 +16,10 @@ export class MessageService {
 
     return this.messageRepository.save(message);
   }
+
+  getMessageByConversationId(conversationId: string): Promise<Message[]> {
+    return this.messageRepository.find({
+      where: { conversationId },
+    });
+  }
 }

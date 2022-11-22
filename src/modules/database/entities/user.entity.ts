@@ -1,4 +1,12 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Profile } from './profile.entity';
 import { UserConversation } from './user-conversation.entity';
@@ -20,4 +28,10 @@ export class User extends BaseEntity {
 
   @OneToMany(() => UserConversation, (userConversation) => userConversation.user)
   userConversations: UserConversation[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async lowercaseEmail(): Promise<void> {
+    this.email = this.email.toLowerCase();
+  }
 }

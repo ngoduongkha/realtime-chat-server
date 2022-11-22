@@ -21,7 +21,7 @@ export class UserService {
   }
 
   async register(dto: SignupDto): Promise<User> {
-    const existing = await this.userRepository.findOneBy({ email: dto.email });
+    const existing = await this.userRepository.findOneBy({ email: dto.email.toLowerCase() });
 
     if (existing) {
       throw new BadRequestException('Email already register');

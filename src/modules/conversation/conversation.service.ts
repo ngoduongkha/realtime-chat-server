@@ -14,6 +14,24 @@ export class ConversationService {
     private readonly userConversationRepository: Repository<UserConversation>,
   ) {}
 
+  getConversationById(conversationId: string): Promise<Conversation | null> {
+    return this.conversationRepository.findOne({
+      where: { id: conversationId },
+      relations: { users: { profile: true }, lastMessage: true },
+    });
+  }
+
+  getUserConversations(userId: string): Promise<GetConversationResponse[]> {
+    return this.conversationRepository.find({
+      where: {
+        userConversations: {
+          userId,
+        },
+      },
+      relations: { users: { profile: true }, lastMessage: true },
+    });
+  }
+
   async createConversation(userId: string, friendId: string): Promise<GetConversationResponse> {
     const existing = await this.conversationRepository.findOne({
       where: {
@@ -24,6 +42,7 @@ export class ConversationService {
           userId: friendId,
         },
       },
+      select: { id: true },
     });
 
     if (existing) {

@@ -1,20 +1,18 @@
 import { Logger, UseFilters, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import {
   BaseWsExceptionFilter,
   ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Namespace, Socket } from 'socket.io';
 import { WsJwtGuard } from '../auth/guards';
-import { AuthPayload, SocketWithAuth } from '../auth/types';
-import { ConversationService } from '../conversation/conversation.service';
-import { InformationService } from '../information/information.service';
+import { SocketWithAuth } from '../auth/types';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessageService } from './message.service';
 
@@ -22,30 +20,19 @@ import { MessageService } from './message.service';
 @UseGuards(WsJwtGuard)
 @UseFilters(new BaseWsExceptionFilter())
 @WebSocketGateway({ namespace: 'message' })
-export default class MessageGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+export default class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(private readonly messageService: MessageService) {}
+
   private readonly logger = new Logger(MessageGateway.name);
 
   @WebSocketServer()
   private readonly io: Namespace;
 
-  constructor(
-    private readonly jwtService: JwtService,
-    private readonly messageService: MessageService,
-    private readonly informationService: InformationService,
-    private readonly conversationService: ConversationService,
-  ) {}
-
-  afterInit(): void {
-    this.logger.log('Message Gateway initialized.');
-  }
-
-  async handleConnection(client: Socket): Promise<void> {
+  async handleConnection(
+    client: Socket & { handshake: { query: { conversationId: string } } },
+  ): Promise<void> {
     try {
-      const user = this.getAuthPayload(client);
-
-      await this.informationService.upsert({ userId: user.id, socketId: client.id });
+      client.join(client.handshake.query.conversationId);
 
       this.logger.log('Client connected', client.id);
     } catch (ex) {
@@ -54,42 +41,37 @@ export default class MessageGateway
   }
 
   async handleDisconnect(client: Socket): Promise<void> {
-    const user = this.getAuthPayload(client);
-
-    await this.informationService.delete(user.id);
-
     this.logger.log('Client disconnect', client.id);
   }
 
   @SubscribeMessage('message')
   async handleMessage(
     @ConnectedSocket() client: SocketWithAuth,
-    payload: CreateMessageDto,
+    @MessageBody() payload: CreateMessageDto,
   ): Promise<void> {
-    this.messageService.createMessage(client.handshake.user.id, payload);
+    try {
+      await this.messageService.createMessage(client.handshake.user.id, payload);
+      client.broadcast
+        .in(payload.conversationId)
+        .emit('message', { clientId: client.id, content: payload.content });
+    } catch (error) {
+      this.logger.error(`Cannot send message to room ${payload.conversationId}`, error);
+      throw new WsException('Cannot send message');
+    }
   }
 
-  private getAuthPayload(client: Socket): AuthPayload {
-    const authPayload = client.handshake.headers.authorization ?? '';
-
-    if (!authPayload) {
-      this.logger.error('Token not provided');
-      throw new Error('Token not provided');
-    }
-
-    const [method, token] = authPayload.split(' ');
-
-    if (method !== 'Bearer') {
-      this.logger.error('Invalid authentication method. Only Bearer is supported.');
-      throw new Error('Invalid authentication method. Only Bearer is supported.');
-    }
-
+  @SubscribeMessage('typing')
+  async handleTyping(
+    @ConnectedSocket() client: SocketWithAuth,
+    @MessageBody() payload: { conversationId: string; isTyping: boolean },
+  ): Promise<void> {
     try {
-      const decoded = this.jwtService.verify<AuthPayload>(token);
-      return decoded;
-    } catch (ex) {
-      this.logger.error('Invalid token');
-      throw new Error('Invalid token');
+      client.broadcast
+        .in(payload.conversationId)
+        .emit('typing', { clientId: client.id, isTyping: payload.isTyping });
+    } catch (error) {
+      this.logger.error(`Cannot send typing to room ${payload.conversationId}`, error);
+      throw new WsException('Cannot send typing');
     }
   }
 }
