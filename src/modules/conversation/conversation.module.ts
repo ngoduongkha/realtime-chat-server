@@ -8,5 +8,6 @@ import { Conversation, UserConversation } from '../database/entities';
   imports: [TypeOrmModule.forFeature([Conversation, UserConversation])],
   controllers: [ConversationController],
   providers: [ConversationService],
+  exports: [ConversationService],
 })
 export class ConversationModule {}

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseResponse } from 'src/common/base.dto';
+import { BaseResponse } from 'src/common/dto';
 
 export class GetProfileResponse extends BaseResponse {
   @ApiProperty({ type: String, example: 'Ngo Kha' })

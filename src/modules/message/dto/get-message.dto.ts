@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseResponse } from 'src/common/dto';
 
-export class GetMessageResponse {
-  @ApiProperty()
-  id: String;
-
+export class GetMessageResponse extends BaseResponse {
   @ApiProperty()
   content: String;
 

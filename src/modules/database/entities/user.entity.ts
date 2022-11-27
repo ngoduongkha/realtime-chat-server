@@ -22,7 +22,7 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', nullable: true, select: false })
   refreshToken: string | null;
 
-  @OneToOne(() => Profile)
+  @OneToOne(() => Profile, { cascade: ['insert'] })
   @JoinColumn()
   profile: Profile;
 

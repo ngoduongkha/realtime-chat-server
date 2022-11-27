@@ -1,8 +1,8 @@
 import { Column, Entity } from 'typeorm';
-import { IdentityEntity } from './base.entity';
+import { BaseEntity } from './base.entity';
 
 @Entity()
-export class Profile extends IdentityEntity {
+export class Profile extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string;
 

@@ -8,14 +8,6 @@ declare global {
     interface ProcessEnv {
       NODE_ENV: 'test' | 'dev' | 'stag' | 'prod';
       PORT: number;
-      DB_CONNECTION: string;
-      DB_HOST: string;
-      DB_PORT: number;
-      DB_USERNAME: string;
-      DB_PASSWORD: string;
-      DB_NAME: string;
-      DB_LOGGING: boolean;
-      DB_SYNCHRONIZE: boolean;
       JWT_SECRET: string;
       JWT_REFRESH_SECRET: string;
       ACCESS_TOKEN_EXPIRATION: string;
@@ -56,7 +48,7 @@ async function bootstrap(): Promise<void> {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  await app.listen(process.env.PORT);
+  await app.listen(80);
 }
 
 bootstrap();

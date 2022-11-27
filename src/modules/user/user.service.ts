@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { createHash } from 'crypto';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { PageDto, PageMetaDto, PageOptionsDto } from 'src/common/dto';
 import { Profile, User } from '../database/entities';
 import { GetUserResponse } from './dto';
 import { SignupDto } from '../auth/dto';
@@ -15,6 +16,24 @@ export class UserService {
     @InjectRepository(Profile)
     private readonly profileRepository: Repository<Profile>,
   ) {}
+
+  public async getUsers(pageOptionsDto: PageOptionsDto): Promise<PageDto<GetUserResponse>> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+
+    queryBuilder
+      .where('profile.name LIKE :name', { name: `%${pageOptionsDto.keyword}%` })
+      .orWhere('user.email LIKE :email', { email: `%${pageOptionsDto.keyword}%` })
+      .innerJoinAndSelect('user.profile', 'profile')
+      .skip(pageOptionsDto.skip)
+      .take(pageOptionsDto.take);
+
+    const itemCount = await queryBuilder.getCount();
+    const entities = await queryBuilder.getMany();
+
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+
+    return new PageDto(entities, pageMetaDto);
+  }
 
   async findById(id: string): Promise<User | null> {
     return this.userRepository.findOneBy({ id });

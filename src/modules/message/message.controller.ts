@@ -1,7 +1,7 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards';
-import { Message } from '../database/entities';
+import { GetMessageResponse } from './dto';
 import { MessageService } from './message.service';
 
 @UseGuards(JwtAuthGuard)
@@ -12,10 +12,10 @@ export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
   @Get('conversation/:conversationId')
-  @ApiOkResponse({ type: [Message] })
+  @ApiOkResponse({ type: [GetMessageResponse] })
   async getMessagesByConversationId(
     @Param('conversationId') conversationId: string,
-  ): Promise<Message[]> {
+  ): Promise<GetMessageResponse[]> {
     return this.messageService.getMessageByConversationId(conversationId);
   }
 }

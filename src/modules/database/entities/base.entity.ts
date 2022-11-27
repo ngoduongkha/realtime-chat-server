@@ -6,10 +6,10 @@ export abstract class IdentityEntity {
 }
 
 export abstract class BaseEntity extends IdentityEntity {
-  @CreateDateColumn({ select: false })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn({ select: false })
+  @UpdateDateColumn()
   updatedAt: Date;
 
   @Column({

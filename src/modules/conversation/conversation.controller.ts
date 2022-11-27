@@ -7,7 +7,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards';
-import { CurrentUser } from '../user/user.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ConversationService } from './conversation.service';
 import { CreateConversationDto, GetConversationResponse } from './dto';
 

@@ -21,6 +21,13 @@ export class ConversationService {
     });
   }
 
+  updateLastMessage(conversationId: string, messageId: string): Promise<Conversation> {
+    return this.conversationRepository.save({
+      id: conversationId,
+      lastMessageId: messageId,
+    });
+  }
+
   getUserConversations(userId: string): Promise<GetConversationResponse[]> {
     return this.conversationRepository.find({
       where: {
@@ -30,6 +37,17 @@ export class ConversationService {
       },
       relations: { users: { profile: true }, lastMessage: true },
     });
+  }
+
+  getUserConversationIdsByUserId(userId: string): Promise<string[]> {
+    return this.userConversationRepository
+      .find({
+        where: { userId },
+        select: ['conversationId'],
+      })
+      .then((userConversations) =>
+        userConversations.map((userConversation) => userConversation.conversationId),
+      );
   }
 
   async createConversation(userId: string, friendId: string): Promise<GetConversationResponse> {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseResponse } from 'src/common/base.dto';
+import { BaseResponse } from 'src/common/dto';
 import { GetMessageResponse } from 'src/modules/message/dto/get-message.dto';
 import { GetUserResponse } from 'src/modules/user/dto';
 

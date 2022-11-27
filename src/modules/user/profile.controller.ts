@@ -1,9 +1,9 @@
-import { Controller, UseGuards, Get, Param, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, UseGuards, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { PageDto, PageOptionsDto } from 'src/common/dto';
 import { JwtAuthGuard } from '../auth/guards';
 import { GetUserResponse } from './dto';
-import { CurrentUser } from './user.decorator';
-
+import { ApiPaginatedResponse, CurrentUser } from '../../common/decorators';
 import { UserService } from './user.service';
 
 @ApiTags('profile')
@@ -13,6 +13,12 @@ import { UserService } from './user.service';
 export class ProfileController {
   constructor(private readonly userService: UserService) {}
 
+  @Get()
+  @ApiPaginatedResponse(GetUserResponse)
+  index(@Query() pageOptions: PageOptionsDto): Promise<PageDto<GetUserResponse>> {
+    return this.userService.getUsers(pageOptions);
+  }
+
   @ApiOkResponse({ type: GetUserResponse })
   @Get('me')
   getMe(@CurrentUser('id') userId: string): Promise<GetUserResponse> {
@@ -21,7 +27,7 @@ export class ProfileController {
 
   @ApiOkResponse({ type: GetUserResponse })
   @Get(':id')
-  get(@Param('id', new ParseUUIDPipe()) userId: string): Promise<GetUserResponse> {
+  getById(@Param('id', new ParseUUIDPipe()) userId: string): Promise<GetUserResponse> {
     return this.userService.getUserProfileById(userId);
   }
 

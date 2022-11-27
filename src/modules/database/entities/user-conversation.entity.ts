@@ -12,9 +12,9 @@ export class UserConversation {
 
   @ManyToOne(() => User)
   @JoinColumn()
-  user: User;
+  user?: User;
 
   @ManyToOne(() => Conversation)
   @JoinColumn()
-  conversation: Conversation;
+  conversation?: Conversation;
 }

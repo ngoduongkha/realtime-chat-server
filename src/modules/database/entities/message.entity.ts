@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Conversation } from './conversation.entity';
 import { User } from './user.entity';
@@ -21,4 +21,11 @@ export class Message extends BaseEntity {
   @ManyToOne(() => User)
   @JoinColumn()
   sender?: User;
+
+  @Column({ type: 'uuid', nullable: true })
+  replyToId?: string | null;
+
+  @OneToOne(() => Message)
+  @JoinColumn({ name: 'replyToId' })
+  replyTo: Message | null;
 }
