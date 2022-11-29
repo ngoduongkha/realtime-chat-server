@@ -36,6 +36,7 @@ export default class MessageGateway implements OnGatewayConnection, OnGatewayDis
       const conversationIds = await this.conversationService.getUserConversationIdsByUserId(userId);
 
       client.join(conversationIds);
+      client.in(conversationIds).emit('online', { userId, isOnline: true });
 
       this.logger.log('Client connected', client.id);
     } catch (ex) {
@@ -44,6 +45,11 @@ export default class MessageGateway implements OnGatewayConnection, OnGatewayDis
   }
 
   async handleDisconnect(client: Socket): Promise<void> {
+    const userId = this.getAuthPayload(client).id;
+    const conversationIds = await this.conversationService.getUserConversationIdsByUserId(userId);
+
+    client.in(conversationIds).emit('online', { userId, isOnline: false });
+
     this.logger.log('Client disconnect', client.id);
   }
 

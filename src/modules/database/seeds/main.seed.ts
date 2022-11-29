@@ -6,12 +6,11 @@ import UserSeeder from './user.seed';
 
 export class MainSeeder implements Seeder {
   async run(dataSource: DataSource): Promise<void> {
-    await runSeeder(dataSource, UserSeeder);
-    await runSeeder(dataSource, ConversationSeeder);
+    await runSeeder(dataSource, UserSeeder, { parallelExecution: true });
+    await runSeeder(dataSource, ConversationSeeder, { parallelExecution: true });
 
     const users = await dataSource.getRepository(User).find();
     const conversations = await dataSource.getRepository(Conversation).find();
-
     const userConversations: UserConversation[] = [];
 
     let idx = 0;

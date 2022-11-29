@@ -17,6 +17,7 @@ const options: DataSourceOptions & SeederOptions = {
   entities: [resolve(__dirname, '**/database/entities/*.entity.{js,ts}')],
   migrations: [resolve(__dirname, '../migrations/*.{js,ts}')],
   migrationsTableName: '__migrations',
+  logging: process.env.NODE_ENV === 'dev',
   seeds: [MainSeeder],
   factories: [resolve(__dirname, '**/database/factories/**/*{.ts,.js}')],
   namingStrategy: new SnakeNamingStrategy(),
