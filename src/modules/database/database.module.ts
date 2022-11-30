@@ -17,7 +17,7 @@ import { SnakeNamingStrategy } from './strategies';
         database: configService.get('DB_NAME'),
         entities: [`${__dirname}/entities/**/*.entity{.ts,.js}`],
         namingStrategy: new SnakeNamingStrategy(),
-        // synchronize: process.env.NODE_ENV === 'dev',
+        synchronize: process.env.NODE_ENV === 'dev',
         logging: process.env.NODE_ENV === 'dev',
       }),
     }),

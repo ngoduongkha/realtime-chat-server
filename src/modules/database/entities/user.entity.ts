@@ -22,6 +22,9 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', nullable: true, select: false })
   refreshToken: string | null;
 
+  @Column({ type: 'boolean', default: false })
+  isOnline: boolean;
+
   @OneToOne(() => Profile, { cascade: ['insert'] })
   @JoinColumn()
   profile: Profile;

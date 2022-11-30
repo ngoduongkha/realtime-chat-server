@@ -36,6 +36,9 @@ export class ConversationService {
         },
       },
       relations: { users: { profile: true }, lastMessage: true },
+      order: {
+        updatedAt: 'DESC',
+      },
     });
   }
 

@@ -17,12 +17,20 @@ export class UserService {
     private readonly profileRepository: Repository<Profile>,
   ) {}
 
+  public async updateOnline(userId: string, isOnline: boolean): Promise<void> {
+    await this.userRepository.update(userId, { isOnline });
+  }
+
   public async getUsers(pageOptionsDto: PageOptionsDto): Promise<PageDto<GetUserResponse>> {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
 
     queryBuilder
-      .where('profile.name LIKE :name', { name: `%${pageOptionsDto.keyword}%` })
-      .orWhere('user.email LIKE :email', { email: `%${pageOptionsDto.keyword}%` })
+      .where('LOWER(profile.name) LIKE :name', {
+        name: `%${pageOptionsDto.keyword?.toLowerCase()}%`,
+      })
+      .orWhere('LOWER(user.email) LIKE :email', {
+        email: `%${pageOptionsDto.keyword?.toLowerCase()}%`,
+      })
       .innerJoinAndSelect('user.profile', 'profile')
       .skip(pageOptionsDto.skip)
       .take(pageOptionsDto.take);

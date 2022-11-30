@@ -14,6 +14,7 @@ import { Socket } from 'socket.io';
 import { WsJwtGuard } from '../auth/guards';
 import { AuthPayload, SocketWithAuth } from '../auth/types';
 import { ConversationService } from '../conversation/conversation.service';
+import { UserService } from '../user/user.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessageService } from './message.service';
 
@@ -25,6 +26,7 @@ export default class MessageGateway implements OnGatewayConnection, OnGatewayDis
   constructor(
     private readonly messageService: MessageService,
     private readonly conversationService: ConversationService,
+    private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -38,6 +40,8 @@ export default class MessageGateway implements OnGatewayConnection, OnGatewayDis
       client.join(conversationIds);
       client.in(conversationIds).emit('online', { userId, isOnline: true });
 
+      await this.userService.updateOnline(userId, true);
+
       this.logger.log('Client connected', client.id);
     } catch (ex) {
       client.disconnect();
@@ -49,6 +53,7 @@ export default class MessageGateway implements OnGatewayConnection, OnGatewayDis
     const conversationIds = await this.conversationService.getUserConversationIdsByUserId(userId);
 
     client.in(conversationIds).emit('online', { userId, isOnline: false });
+    await this.userService.updateOnline(userId, false);
 
     this.logger.log('Client disconnect', client.id);
   }

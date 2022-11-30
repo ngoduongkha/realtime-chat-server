@@ -6,6 +6,9 @@ export class GetUserResponse extends BaseResponse {
   @ApiProperty({ example: 'ngoduongkhakg2001@gmail.com' })
   email: string;
 
+  @ApiProperty()
+  isOnline: boolean;
+
   @ApiProperty({ type: GetProfileResponse })
   profile: GetProfileResponse;
 }
