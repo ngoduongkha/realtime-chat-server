@@ -1,10 +1,10 @@
-import { Controller, UseGuards, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, UseGuards, Get, Param, ParseUUIDPipe, Query, Body, Put } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { PageDto, PageOptionsDto } from 'src/common/dto';
 import { JwtAuthGuard } from '../auth/guards';
-import { GetUserResponse } from './dto';
 import { ApiPaginatedResponse, CurrentUser } from '../../common/decorators';
 import { UserService } from './user.service';
+import { EditProfileDto, GetUserResponse } from './dto';
 
 @ApiTags('profile')
 @Controller('profile')
@@ -31,11 +31,10 @@ export class ProfileController {
     return this.userService.getUserProfileById(userId);
   }
 
-  // @Put(':id')
-  // update(
-  //   @Param('id', new ParseIntPipe()) id: number,
-  //   @Body() updatesUser: UserUpdate,
-  // ): Promise<User> {
-  //   return this.userService.update(id, updatesUser);
-  // }
+  @Put()
+  @ApiBody({ type: EditProfileDto })
+  @ApiOkResponse({ type: GetUserResponse })
+  update(@CurrentUser('id') id: string, @Body() dto: EditProfileDto): Promise<GetUserResponse> {
+    return this.userService.update(id, dto);
+  }
 }

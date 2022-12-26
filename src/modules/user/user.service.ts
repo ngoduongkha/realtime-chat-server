@@ -1,11 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createHash } from 'crypto';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { PageDto, PageMetaDto, PageOptionsDto } from 'src/common/dto';
 import { Profile, User } from '../database/entities';
-import { GetUserResponse } from './dto';
+import { GetUserResponse, EditProfileDto } from './dto';
 import { SignupDto } from '../auth/dto';
 
 @Injectable()
@@ -133,15 +133,15 @@ export class UserService {
     return null;
   }
 
-  // async update(id: number, updates: UserUpdate): Promise<User> {
-  //   const user = await this.userRepository.findOneBy({ id });
+  async update(id: string, updates: EditProfileDto): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id }, relations: { profile: true } });
 
-  //   if (!user) {
-  //     throw new NotFoundException(`There isn't any user with id: ${id}`);
-  //   }
+    if (!user) {
+      throw new NotFoundException(`There isn't any user with id: ${id}`);
+    }
 
-  //   this.userRepository.merge(user, updates);
+    this.userRepository.merge(user, { profile: updates });
 
-  //   return this.userRepository.save(user);
-  // }
+    return this.userRepository.save(user);
+  }
 }

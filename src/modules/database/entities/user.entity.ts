@@ -25,7 +25,7 @@ export class User extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   isOnline: boolean;
 
-  @OneToOne(() => Profile, { cascade: ['insert'] })
+  @OneToOne(() => Profile, { cascade: true })
   @JoinColumn()
   profile: Profile;
 
