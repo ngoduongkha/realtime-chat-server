@@ -27,7 +27,7 @@ import {
 import { JwtAuthGuard, JwtRefreshGuard, LocalAuthGuard } from './guards';
 import { RequestWithAuth } from './types';
 
-@ApiTags('auth')
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}

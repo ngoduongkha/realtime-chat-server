@@ -12,7 +12,7 @@ import { ConversationService } from './conversation.service';
 import { CreateConversationDto, GetConversationResponse } from './dto';
 
 @UseGuards(JwtAuthGuard)
-@ApiTags('conversation')
+@ApiTags('Conversation')
 @ApiBearerAuth('access-token')
 @Controller('conversation')
 export class ConversationController {

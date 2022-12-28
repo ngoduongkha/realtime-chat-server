@@ -5,7 +5,7 @@ import { GetMessageResponse } from './dto';
 import { MessageService } from './message.service';
 
 @UseGuards(JwtAuthGuard)
-@ApiTags('message')
+@ApiTags('Message')
 @ApiBearerAuth('access-token')
 @Controller('message')
 export class MessageController {

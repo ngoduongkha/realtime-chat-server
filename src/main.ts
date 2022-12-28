@@ -18,7 +18,6 @@ declare global {
       AWS_PUBLIC_BUCKET_NAME: string;
       AGORA_APP_ID: string;
       AGORA_APP_CERTIFICATE: string;
-      DB_PORT: number;
     }
   }
 }
