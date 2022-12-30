@@ -59,17 +59,19 @@ export default class MessageGateway implements OnGatewayConnection, OnGatewayDis
   }
 
   @SubscribeMessage('message')
-  async handleMessage(
+  handleMessage(
     @ConnectedSocket() client: SocketWithAuth,
     @MessageBody() payload: CreateMessageDto,
-  ): Promise<void> {
+  ): void {
     try {
-      const message = await this.messageService.createMessage(client.handshake.user.id, payload);
-      this.conversationService.updateLastMessage(payload.conversationId, message.id);
+      this.messageService.createMessage(client.handshake.user.id, payload).then((message) => {
+        this.conversationService.updateLastMessage(payload.conversationId, message.id);
+      });
 
       client.broadcast.in(payload.conversationId).emit('message', {
         userId: client.handshake.user.id,
         content: payload.content,
+        replyToId: payload.replyToId,
       });
     } catch (error) {
       this.logger.error(`Cannot send message to room ${payload.conversationId}`, error);
