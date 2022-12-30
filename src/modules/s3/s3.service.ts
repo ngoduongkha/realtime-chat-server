@@ -35,7 +35,10 @@ export class S3Service {
         Key: fileName,
         ContentType: file.mimetype,
       })
-      .promise();
+      .promise()
+      .catch((err) => {
+        throw new BadRequestException(err);
+      });
 
     return { url: uploadResult.Location };
   }
