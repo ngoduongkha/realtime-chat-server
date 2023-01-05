@@ -8,9 +8,10 @@ import {
   OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { WsJwtGuard } from '../auth/guards';
 import { AuthPayload, SocketWithAuth } from '../auth/types';
 import { ConversationService } from '../conversation/conversation.service';
@@ -23,6 +24,9 @@ import { MessageService } from './message.service';
 @UseFilters(new BaseWsExceptionFilter())
 @WebSocketGateway({ namespace: 'message' })
 export default class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  @WebSocketServer()
+  server: Server;
+
   constructor(
     private readonly messageService: MessageService,
     private readonly conversationService: ConversationService,
@@ -70,7 +74,7 @@ export default class MessageGateway implements OnGatewayConnection, OnGatewayDis
       const { id } = await this.messageService.createMessage(userId, payload);
       this.conversationService.updateLastMessage(conversationId, id);
 
-      client.broadcast.in(payload.conversationId).emit('message', {
+      this.server.to(conversationId).emit('message', {
         id,
         userId,
         content,
